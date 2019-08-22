@@ -7,7 +7,7 @@ env:
   variables:
     HOST_ALIAS: snowflake
     HOST_GROUP: web_servers
-  parameter-store:    
+  parameter-store:
     CONFIG_BUCKET: /lightsail/bucket_name # config bucket 
     HOST_IP: /lightsail/host_ip # instance ip address
     KEY_NAME: /lightsail/key_name # name of instance ssh key

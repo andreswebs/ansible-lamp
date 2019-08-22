@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# This script uses Ansible to enforce remote instance configuration
-# WARNING: 
-# do not run this script on your local machine
-# it is for use by AWS CodeBuild
+# This script uses Ansible to enforce instance configuration
 
 set -e
 set -o pipefail
@@ -15,7 +12,7 @@ if [ -f "${ENV_PATH}" ]; then
     source "${ENV_PATH}"
 fi
 
-# check existence of required env vars
+# check existence of required env vars from buildspec.yml
 
 if [ ! "${CONFIG_BUCKET}" ]; then
     echo "Missing environment variable: CONFIG_BUCKET"
@@ -42,19 +39,6 @@ if [ ! "${KEY_NAME}" ]; then
     exit 1
 fi
 
-function install_ansible () {
-    local CHECK_INSTALLATION
-    # https://stackoverflow.com/questions/1298066/check-if-an-apt-get-package-is-installed-and-then-install-it-if-its-not-on-linu
-    # 1 for installed, 0 for not installed
-    CHECK_INSTALLATION=$(dpkg-query -W -f='${Status}' ansible 2>/dev/null | grep -c "ok installed")
-    
-    if [ "${CHECK_INSTALLATION}" -eq 0  ]; then
-        apt-add-repository --yes --update ppa:ansible/ansible
-        apt-get install -y ansible
-    fi
-
-}
-
 # get libs from s3
 aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./app
 
@@ -66,12 +50,10 @@ chmod 0400 "/root/.ssh/${KEY_NAME}"
 
 # set ssh config
 cat << EOF >> /root/.ssh/config
-
 Host *
   PreferredAuthentications publickey
   IdentitiesOnly yes
   StrictHostKeyChecking no
-
 EOF
 
 # get codedeploy keys from s3
@@ -94,7 +76,12 @@ EOF
 # place app files
 mv -f ./app ./infrastructure/files
 
-install_ansible
+# TODO: add a flag argument to script to skip
+# install ansible
+apt-add-repository --yes --update ppa:ansible/ansible
+apt-get install -y ansible
 
 # ansible
 cd ./infrastructure && ansible-playbook playbook.yml
+
+# cd .. && rm -rf ./infrastructure

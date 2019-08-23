@@ -45,7 +45,7 @@ aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./app
 # TODO: strenghten key encryption and security strategies
 
 # get ssh key from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/key" /root/.ssh
+aws s3 cp "s3://${CONFIG_BUCKET}/key/${KEY_NAME}" "/root/.ssh/${KEY_NAME}"
 chmod 0400 "/root/.ssh/${KEY_NAME}"
 
 # set ssh config
@@ -82,6 +82,4 @@ apt-add-repository --yes --update ppa:ansible/ansible
 apt-get install -y ansible
 
 # ansible
-cd ./infrastructure && ansible-playbook playbook.yml
-
-# cd .. && rm -rf ./infrastructure
+cd ./infrastructure && ansible-playbook lamp.playbook.yml

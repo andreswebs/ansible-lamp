@@ -39,9 +39,6 @@ if [ ! "${KEY_NAME}" ]; then
     exit 1
 fi
 
-# get libs from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./app
-
 # TODO: strenghten key encryption and security strategies
 
 # get ssh key from s3
@@ -65,6 +62,9 @@ aws s3 sync "s3://${CONFIG_BUCKET}/mysql_config" ./infrastructure/vars
 # get db dump from s3
 aws s3 sync "s3://${CONFIG_BUCKET}/mysql_dump" ./infrastructure/files/mysql
 
+# get libs from s3
+aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./infrastructure/files/libs
+
 HOST_CONFIG="${HOST_ALIAS} ansible_host=${HOST_IP} ansible_user=ubuntu ansible_private_key_file=\"/root/.ssh/${KEY_NAME}\""
 
 # define host
@@ -73,10 +73,6 @@ cat << EOF > ./infrastructure/hosts
 ${HOST_CONFIG}
 EOF
 
-# place app files
-mv -f ./app ./infrastructure/files
-
-# TODO: add a flag argument to script to skip
 # install ansible
 apt-add-repository --yes --update ppa:ansible/ansible
 apt-get install -y ansible

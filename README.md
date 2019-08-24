@@ -1,4 +1,4 @@
-# Lightsail Deployment Pipeline
+# LAMP Instance Deployment Pipeline
 
 ## Pipeline
 
@@ -10,7 +10,11 @@ The code pipeline has the following structure:
 |---                        |---                      |
 |      Github               |      AWS CodeBuild      |
 
-Deployment happens from inside the `scripts/build.sh` script directly to Lightsail.
+Deployment happens from inside the `scripts/build.sh` script on AWS CodeBuild, directly to a server instance via ansible.
+
+The playbook at `infrastructure/lamp.playbook.yml` can be run locally if the needed files and variables are present in the local machine.
+
+If stored locally, the relevant files will be ignored by `git` through the configured `.gitignore` files.
 
 ## Directory structure
 

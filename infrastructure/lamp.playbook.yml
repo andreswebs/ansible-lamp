@@ -62,6 +62,18 @@
       tags:
         - apache
 
+    # chmod -R u=rwX,g=rX,o=rX /var/www
+    # This will set permissions as
+    # 0755 for directories and executable files
+    # 0644 for non-executable files
+    - name: Update permissions on /var/www
+      file:
+        path: /var/www
+        mode: u=rwX,g=rX,o=rX
+        recurse: yes
+      tags:
+        - apache
+
     - name: Start the Apache service
       service: 
         name: apache2 
@@ -216,7 +228,7 @@
         - php
 
     # Deploy app
-    - name: Ensure app directory
+    - name: Create app directory
       file:
         path: "{{ app_dir }}"
         state: directory
@@ -225,9 +237,38 @@
 
     - name: Deploy app files
       synchronize:
-        src: files/app/
+        src: ../app/
         dest: "{{ app_dir }}"
         delete: yes
+      tags:
+        - app
+
+    - name: Deploy extra lib files
+      synchronize:
+        src: files/libs/
+        dest: "{{ app_dir }}"
+      tags:
+        - app
+
+    - name: Configure Apache virtual host
+      template:
+        src: apache_app.conf.j2
+        dest: "/etc/apache2/sites-available/{{ apache.server_name }}.conf"
+        owner: root
+        mode: '0644'
+      notify: Restart Apache
+      tags:
+        - app
+
+    - name: Disable default virtual host
+      command: a2dissite 000-default
+      notify: Restart Apache
+      tags:
+        - app
+
+    - name: Enable new virtual host
+      command: "a2ensite {{ apache.server_name }}"
+      notify: Restart Apache      
       tags:
         - app
 

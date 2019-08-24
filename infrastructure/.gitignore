@@ -1,1 +1,4 @@
 hosts
+vars/**
+!vars/.gitkeep
+!vars/app_config.example.yml

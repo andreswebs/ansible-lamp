@@ -1,0 +1,6 @@
+---
+# app_dir: /var/www/html
+app_dir: /var/www/example.com
+apache:
+  server_admin: webmaster@example.com
+  server_name: example.com

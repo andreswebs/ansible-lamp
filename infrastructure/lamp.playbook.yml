@@ -54,6 +54,14 @@
       tags:
         - apache
 
+    - name: Enable Apache mod_rewrite
+      apache2_module:
+        name: mod_rewrite
+        status: present
+      notify: Restart Apache
+      tags:
+        - apache
+
     - name: Start the Apache service
       service: 
         name: apache2 
@@ -207,6 +215,23 @@
       tags:
         - php
 
+    # Deploy app
+    - name: Ensure app directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+      tags:
+        - app
+
+    - name: Deploy app files
+      synchronize:
+        src: files/app/
+        dest: "{{ app_dir }}"
+        delete: yes
+      tags:
+        - app
+
+    # TODO: generate certificates and configure
     - name: Install Certbot
       apt:
         state: present
@@ -216,15 +241,6 @@
           - python-certbot-apache
       tags:
         - letsencrypt
-
-    # Deploy
-    - name: Deploy app files
-      synchronize:
-        src: files/app/
-        dest: "{{ app_dir }}"
-        delete: yes
-      tags:
-        - app
 
     # Note: this would be needed if using CodeDeploy
 

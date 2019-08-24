@@ -54,9 +54,9 @@
       tags:
         - apache
 
-    - name: Enable Apache mod_rewrite
+    - name: Enable Apache module rewrite
       apache2_module:
-        name: mod_rewrite
+        name: rewrite
         state: present
       notify: Restart Apache
       tags:

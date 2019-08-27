@@ -15,22 +15,22 @@ fi
 # check existence of required env vars from buildspec.yml
 
 if [ ! "${CONFIG_BUCKET}" ]; then
-    echo "Missing environment variable: CONFIG_BUCKET"
+    echo "error: missing environment variable: CONFIG_BUCKET"
     exit 1
 fi
 
 if [ ! "${HOST_ALIAS}" ]; then
-    echo "Missing environment variable: HOST_ALIAS"
+    echo "error: missing environment variable: HOST_ALIAS"
     exit 1
 fi
 
 if [ ! "${HOST_IP}" ]; then
-    echo "Missing environment variable: HOST_IP"
+    echo "error: missing environment variable: HOST_IP"
     exit 1
 fi
 
 if [ ! "${KEY_NAME}" ]; then
-    echo "Missing environment variable: KEY_NAME"
+    echo "error: missing environment variable: KEY_NAME"
     exit 1
 fi
 
@@ -90,10 +90,10 @@ aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./infrastructure/files/libs
 
 HOST_CONFIG="${HOST_ALIAS} ansible_host=${HOST_IP} ansible_user=ubuntu ansible_private_key_file=\"/root/.ssh/${KEY_NAME}\" env=${STAGE}"
 
-INVENTORY_FILE="./infrastructure/inventory/hosts.${STAGE}.ini"
+INVENTORY_FILE="inventory/hosts.${STAGE}.ini"
 
 # define host in inventory
-cat << EOF > "${INVENTORY_FILE}"
+cat << EOF > "./${INVENTORY_FILE}"
 ${HOST_CONFIG}
 EOF
 
@@ -102,4 +102,4 @@ apt-add-repository --yes --update ppa:ansible/ansible
 apt-get install -y ansible
 
 # ansible
-cd ./infrastructure && ansible-playbook lamp.playbook.yml -i "${INVENTORY_FILE}"
+cd ./infrastructure && ansible-playbook lamp.playbook.yml -i "./infrastructure/${INVENTORY_FILE}"

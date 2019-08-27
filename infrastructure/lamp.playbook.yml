@@ -42,7 +42,7 @@
     # Install and configure Let's Encrypt certificate in production
     - name: Install and configure Let's Encrypt certificate in production
       include_tasks: tasks/letsencrypt.yml
-      when: env == 'prod'
+      when: env is defined and env == 'prod'
       tags:
         - letsencrypt
 

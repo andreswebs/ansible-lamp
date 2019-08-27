@@ -53,6 +53,7 @@ fi
 STAGE=${1}
 
 if [ "${STAGE}" != "dev" ] && [ "${STAGE}" != "prod" ]; then
+    echo "error: argument ${STAGE} is not supported"
     show_instructions
     exit 1
 fi

@@ -74,16 +74,16 @@ Host *
 EOF
 
 # get aws config vars from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/onpremise_config" "./infrastructure/vars/${STAGE}"
+aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/aws_config" "./infrastructure/vars/${STAGE}"
 
 # get app config vars from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/app_config" ./infrastructure/vars/all
+aws s3 sync "s3://${CONFIG_BUCKET}/all/app_config" ./infrastructure/vars/all
 
 # get mysql vars from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/mysql_config" ./infrastructure/vars/all
+aws s3 sync "s3://${CONFIG_BUCKET}/all/mysql_config" ./infrastructure/vars/all
 
 # get db dump from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/mysql_backup" ./infrastructure/files/mysql
+aws s3 sync "s3://${CONFIG_BUCKET}/mysql_backup" ./infrastructure/files/mysql
 
 # get libs from s3
 aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./infrastructure/files/libs

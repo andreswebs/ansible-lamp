@@ -1,0 +1,8 @@
+dev/**
+!dev/.gitkeep
+prod/**
+!prod/.gitkeep
+all/**
+!all/.gitkeep
+!all/app_config.example.yml
+!all/mysql_config.example.yml

@@ -39,37 +39,66 @@ if [ ! "${KEY_NAME}" ]; then
     exit 1
 fi
 
+# print usage instructions
+function show_instructions () {
+    echo "usage: ./build.sh <env>"
+    echo "<env> := (dev || prod)"
+    echo
+    echo "example: ./build.sh dev"
+    echo
+}
+
+if [ ${#} -eq 0 ]; then
+    echo "error: too few arguments"
+    echo
+    show_instructions
+    exit 1
+fi
+
+STAGE=${1}
+
+if [ "${STAGE}" != "dev" ] && [ "${STAGE}" != "prod" ]; then
+    show_instructions
+    exit 1
+fi
+
 # TODO: strenghten key encryption and security strategies
 
 # get ssh key from s3
-aws s3 cp "s3://${CONFIG_BUCKET}/key/${KEY_NAME}" "/root/.ssh/${KEY_NAME}"
+aws s3 cp "s3://${CONFIG_BUCKET}/${STAGE}/key/${KEY_NAME}" "/root/.ssh/${KEY_NAME}"
 chmod 0400 "/root/.ssh/${KEY_NAME}"
 
 # set ssh config
 cat << EOF >> /root/.ssh/config
+
 Host *
   PreferredAuthentications publickey
   IdentitiesOnly yes
   StrictHostKeyChecking no
+
 EOF
 
-# get codedeploy keys from s3
-# aws s3 sync "s3://${CONFIG_BUCKET}/codedeploy" ./infrastructure/vars
+# get aws config vars from s3
+aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/onpremise_config" "./infrastructure/vars/${STAGE}"
+
+# get app config vars from s3
+aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/app_config" ./infrastructure/vars/all
 
 # get mysql vars from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/mysql_config" ./infrastructure/vars
+aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/mysql_config" ./infrastructure/vars/all
 
 # get db dump from s3
-aws s3 sync "s3://${CONFIG_BUCKET}/mysql_dump" ./infrastructure/files/mysql
+aws s3 sync "s3://${CONFIG_BUCKET}/${STAGE}/mysql_backup" ./infrastructure/files/mysql
 
 # get libs from s3
 aws s3 sync "s3://${CONFIG_BUCKET}/libs" ./infrastructure/files/libs
 
-HOST_CONFIG="${HOST_ALIAS} ansible_host=${HOST_IP} ansible_user=ubuntu ansible_private_key_file=\"/root/.ssh/${KEY_NAME}\""
+HOST_CONFIG="${HOST_ALIAS} ansible_host=${HOST_IP} ansible_user=ubuntu ansible_private_key_file=\"/root/.ssh/${KEY_NAME}\" env=${STAGE}"
 
-# define host
-cat << EOF > ./infrastructure/hosts
-[${HOST_GROUP}]
+INVENTORY_FILE="./infrastructure/inventory/hosts.${STAGE}.ini"
+
+# define host in inventory
+cat << EOF > "${INVENTORY_FILE}"
 ${HOST_CONFIG}
 EOF
 
@@ -78,4 +107,4 @@ apt-add-repository --yes --update ppa:ansible/ansible
 apt-get install -y ansible
 
 # ansible
-cd ./infrastructure && ansible-playbook lamp.playbook.yml
+cd ./infrastructure && ansible-playbook lamp.playbook.yml -i "${INVENTORY_FILE}"

@@ -1,0 +1,6 @@
+mysql:
+  root_password: rootpass
+  database_name: app_db
+  database_user: dbuser
+  user_password: dbuserpass
+  database_dump: app_db.sql

@@ -6,7 +6,6 @@ run-as: root
 env:
   variables:
     HOST_ALIAS: ubuntu-1
-    HOST_GROUP: web_servers
   parameter-store:
     CONFIG_BUCKET: /lightsail/config_bucket # config bucket 
     HOST_IP: /lightsail/host_ip # instance ip address
@@ -19,4 +18,4 @@ phases:
   build:
     commands:
       - chmod +x ./scripts/build.sh
-      - ./scripts/build.sh
+      - ./scripts/build.sh prod

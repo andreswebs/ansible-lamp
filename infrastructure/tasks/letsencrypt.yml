@@ -1,0 +1,26 @@
+# Install Let's Encrypt Certificate
+- name: Install Certbot
+  apt:
+    state: present
+    install_recommends: yes
+    name:
+      - certbot
+      - python-certbot-apache
+  tags:
+    - letsencrypt
+
+- name: Check if certificate already exists.
+  stat:
+    path: "/etc/letsencrypt/live/{{ apache.server_name }}/cert.pem"
+  register: letsencrypt_cert
+  tags:
+    - letsencrypt
+
+# generate certificate
+# https://certbot.eff.org/docs/using.html#certbot-command-line-options
+- name: Generate new certificate
+  shell: "certbot --authenticator webroot --webroot-path {{ app_dir }} --installer apache --redirect --noninteractive --agree-tos --email {{ apache.server_admin }} --no-eff-email -d {{ apache.server_name }}"
+  when: letsencrypt_cert.stat.exists == false
+  notify: Restart Apache
+  tags:
+    - letsencrypt

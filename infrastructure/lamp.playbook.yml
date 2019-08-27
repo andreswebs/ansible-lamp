@@ -1,37 +1,18 @@
 #!/usr/bin/env ansible-playbook
 ---
 - name: Configure LAMP stack
-  hosts: web_servers
+  hosts: all
   become: yes
   become_user: root
   vars_files:
-    - vars/app_config.yml
-    - vars/mysql_config.yml
-    # - vars/aws_codedeploy_keys.yml
+    - vars/all/app_config.yml
+    - vars/all/mysql_config.yml
+    - vars/{{ env }}/aws_credentials.yml
 
   tasks:
 
     # Configure repositories
-
-    # https://launchpad.net/~ondrej/+archive/ubuntu/php
-    - name: Add php ppa
-      apt_repository: 
-        repo: ppa:ondrej/php
-      tags:
-        - ppa
-    # https://launchpad.net/~ondrej/+archive/ubuntu/apache2
-    - name: Add apache2 ppa
-      apt_repository:
-        repo: ppa:ondrej/apache2 
-      tags:
-        - ppa
-
-    # https://launchpad.net/~certbot/+archive/ubuntu/certbot
-    - name: Add certbot ppa
-      apt_repository:
-        repo: ppa:certbot/certbot
-      tags:
-        - ppa
+    - import_tasks: tasks/repositories.yml
 
     # System update
     - name: Upgrade system
@@ -272,52 +253,18 @@
       tags:
         - app
 
-    # TODO: generate certificates and configure
-    - name: Install Certbot
-      apt:
-        state: present
-        install_recommends: yes
-        name:
-          - certbot
-          - python-certbot-apache
+    # to restart apache
+    - meta: flush_handlers
+      tags:
+        - app
+        - system
+
+    # Install and configure Let's Encrypt certificate in production
+    - name: Install and configure Let's Encrypt certificate in production
+      include_tasks: tasks/letsencrypt.yml
+      when: env == 'prod'
       tags:
         - letsencrypt
-
-    # Note: this would be needed if using CodeDeploy
-
-    # # Install and configure AWS CodeDeploy agent
-    # - name: Get AWS CodeDeploy agent
-    #   get_url:
-    #     url: "https://aws-codedeploy-{{ aws_codedeploy.region }}.s3.amazonaws.com/latest/{{ aws_codedeploy.agent_file }}"
-    #     dest: /home/ubuntu
-    #     mode: '0666'
-    #   tags:
-    #     - codedeploy
-
-    # - name: Install AWS CodeDeploy agent
-    #   apt:
-    #     state: present
-    #     install_recommends: yes
-    #     deb: "/home/ubuntu/{{ aws_codedeploy.agent_file }}"
-    #   tags:
-    #     - codedeploy
-
-    # - name: Start and enable AWS CodeDeploy agent
-    #   service:
-    #     name: codedeploy-agent
-    #     state: started
-    #     enabled: yes
-    #   tags:
-    #     - codedeploy
-
-    # - name: Set up AWS CodeDeploy codedeploy.onpremises.yml
-    #   template:
-    #     src: codedeploy.onpremises.yml.j2
-    #     dest: /etc/codedeploy-agent/conf/codedeploy.onpremises.yml
-    #   notify: 
-    #     - Restart CodeDeploy Agent
-    #   tags:
-    #     - codedeploy
 
     # System check
     - name: Check if a reboot is required
@@ -331,21 +278,4 @@
 
   handlers:
 
-    - name: Restart Apache
-      service: 
-        name: apache2 
-        state: restarted
-
-    - name: Restart MySQL
-      service: 
-        name: mysql 
-        state: restarted
-
-    - name: Restart CodeDeploy Agent
-      service:
-        name: codedeploy-agent
-        state: restarted
-
-    - name: Reboot instance
-      reboot:
-        msg: Maintenance reboot initiated
+    - import_tasks: tasks/handlers.yml 

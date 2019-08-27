@@ -1,0 +1,20 @@
+---
+# https://launchpad.net/~ondrej/+archive/ubuntu/php
+- name: Add php ppa
+  apt_repository: 
+    repo: ppa:ondrej/php
+  tags:
+    - ppa
+# https://launchpad.net/~ondrej/+archive/ubuntu/apache2
+- name: Add apache2 ppa
+  apt_repository:
+    repo: ppa:ondrej/apache2 
+  tags:
+    - ppa
+
+# https://launchpad.net/~certbot/+archive/ubuntu/certbot
+- name: Add certbot ppa
+  apt_repository:
+    repo: ppa:certbot/certbot
+  tags:
+    - ppa

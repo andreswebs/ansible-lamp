@@ -24,11 +24,6 @@ if [ ! "${HOST_ALIAS}" ]; then
     exit 1
 fi
 
-if [ ! "${HOST_GROUP}" ]; then
-    echo "Missing environment variable: HOST_GROUP"
-    exit 1
-fi
-
 if [ ! "${HOST_IP}" ]; then
     echo "Missing environment variable: HOST_IP"
     exit 1

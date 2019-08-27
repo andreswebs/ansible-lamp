@@ -1,0 +1,12 @@
+---
+# these credentials are used to configure an "on premise" instance as a user
+# to enable access to AWS services
+# pay attention to the user's permissions on the AWS account 
+aws:
+  username: user_name_here
+  aws_access_key_id:  access_key_id_here
+  aws_secret_access_key: secret_access_key_here
+  iam_user_arn: arn:aws:iam::ACCOUNT_ID_HERE:user/user_name_here
+  region: select_the_region_eg_us-east-1
+  # this is the name of the codedeploy agent package, do not change
+  codedeploy_agent_file: codedeploy-agent_all.deb

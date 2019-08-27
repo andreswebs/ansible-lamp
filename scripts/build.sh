@@ -93,7 +93,7 @@ HOST_CONFIG="${HOST_ALIAS} ansible_host=${HOST_IP} ansible_user=ubuntu ansible_p
 INVENTORY_FILE="inventory/hosts.${STAGE}.ini"
 
 # define host in inventory
-cat << EOF > "./${INVENTORY_FILE}"
+cat << EOF > "./infrastructure/${INVENTORY_FILE}"
 ${HOST_CONFIG}
 EOF
 
@@ -102,4 +102,4 @@ apt-add-repository --yes --update ppa:ansible/ansible
 apt-get install -y ansible
 
 # ansible
-cd ./infrastructure && ansible-playbook lamp.playbook.yml -i "./infrastructure/${INVENTORY_FILE}"
+cd ./infrastructure && ansible-playbook lamp.playbook.yml -i "./${INVENTORY_FILE}"

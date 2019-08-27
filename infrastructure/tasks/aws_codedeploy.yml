@@ -2,7 +2,7 @@
 # Install and configure AWS CodeDeploy agent
 - name: Get AWS CodeDeploy agent
   get_url:
-    url: "https://aws-codedeploy-{{ aws_codedeploy.region }}.s3.amazonaws.com/latest/{{ aws_codedeploy.agent_file }}"
+    url: "https://aws-codedeploy-{{ aws.region }}.s3.amazonaws.com/latest/{{ aws.codedeploy_agent_file }}"
     dest: /home/ubuntu
     mode: '0666'
   tags:
@@ -12,7 +12,7 @@
   apt:
     state: present
     install_recommends: yes
-    deb: "/home/ubuntu/{{ aws_codedeploy.agent_file }}"
+    deb: "/home/ubuntu/{{ aws.codedeploy_agent_file }}"
   tags:
     - codedeploy
 

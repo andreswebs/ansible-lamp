@@ -1,0 +1,39 @@
+---
+# Set up Apache
+- name: Install Apache
+  apt:
+    state: present
+    install_recommends: yes    
+    name:
+      - apache2
+      - apache2-dev
+  tags:
+    - apache
+
+- name: Enable Apache module rewrite
+  apache2_module:
+    name: rewrite
+    state: present
+  notify: Restart Apache
+  tags:
+    - apache
+
+# chmod -R u=rwX,g=rX,o=rX /var/www
+# This will set permissions as
+# 0755 for directories and executable files
+# 0644 for non-executable files
+- name: Update permissions on /var/www
+  file:
+    path: /var/www
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  tags:
+    - apache
+
+- name: Start the Apache service
+  service: 
+    name: apache2 
+    state: started
+    enabled: true
+  tags:
+    - apache

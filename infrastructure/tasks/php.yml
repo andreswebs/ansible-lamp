@@ -1,0 +1,26 @@
+---
+# Set up PHP
+- name: Install PHP
+  apt: 
+    state: present
+    install_recommends: yes
+    name:
+      - php
+      - php-cli
+      - php-mysql
+      - php-curl  
+      - php-soap
+      - php-xml
+      - php-xmlrpc
+      - php-zip
+      - php-mbstring
+      - php-gettext    
+      - php-bcmath 
+      - php-bz2 
+      - php-intl 
+      - php-gd
+      - php-xdebug
+      - libapache2-mod-php
+  notify: Restart Apache
+  tags:
+    - php

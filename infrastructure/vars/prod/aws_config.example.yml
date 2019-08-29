@@ -8,3 +8,5 @@ aws:
   aws_secret_access_key: secret_access_key_here
   iam_user_arn: arn:aws:iam::ACCOUNT_ID_HERE:user/user_name_here
   region: select_the_region_eg_us-east-1
+  backup_bucket: name_of_backup_bucket_here
+

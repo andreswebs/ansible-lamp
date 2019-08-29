@@ -2,7 +2,7 @@
 # Install and configure AWS CodeDeploy agent
 - name: Get AWS CodeDeploy agent
   get_url:
-    url: "https://aws-codedeploy-{{ aws.region }}.s3.amazonaws.com/latest/{{ aws_codedeploy_agent_file }}"
+    url: "https://aws-codedeploy-{{ aws_codedeploy_region }}.s3.amazonaws.com/latest/{{ aws_codedeploy_agent_file }}"
     dest: /root
     mode: '0666'
   tags:

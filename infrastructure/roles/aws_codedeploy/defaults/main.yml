@@ -1,0 +1,6 @@
+---
+aws_codedeploy_access_key_id: null
+aws_codedeploy_secret_access_key: null
+aws_codedeploy_iam_user_arn: null
+aws_codedeploy_region: null
+aws_codedeploy_agent_file: codedeploy-agent_all.deb

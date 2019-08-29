@@ -24,17 +24,43 @@
       tags:
         - system
 
+    # Set up AWS CLI
+    - import_role:
+        name: aws_onpremises
+      vars:
+        aws_onpremises_access_key_id: "{{ aws.aws_access_key_id }}"
+        aws_onpremises_secret_access_key: "{{ aws.aws_secret_access_key }}"
+      tags:
+        - aws_onpremises
+
     # Set up apache
     - import_tasks: tasks/apache.yml
 
     # Set up MySQL
     - import_tasks: tasks/mysql.yml
 
+    - import_role:
+        name: mysql_backup_s3
+      vars:
+        mysql_backup_username: root
+        mysql_backup_bucket: "{{ aws.backup_bucket }}"
+      tags:
+        - mysql
+        - mysql_backup_s3
+
     # Set up PHP
     - import_tasks: tasks/php.yml
 
     # Set up AWS CodeDeploy
-    - import_tasks: tasks/aws_codedeploy.yml
+    - import_role: 
+        name: aws_codedeploy
+      vars:
+        aws_codedeploy_access_key_id: "{{ aws.aws_access_key_id }}"
+        aws_codedeploy_secret_access_key: "{{ aws.aws_secret_access_key }}"
+        aws_codedeploy_iam_user_arn: "{{ aws.iam_user_arn }}"
+        aws_codedeploy_region: "{{ aws.region }}"
+      tags:
+        - aws_codedeploy
 
     # Deploy app
     - import_tasks: tasks/app.yml

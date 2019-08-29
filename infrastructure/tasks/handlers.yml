@@ -9,11 +9,6 @@
     name: apache2 
     state: restarted
 
-- name: Restart CodeDeploy Agent
-  service:
-    name: codedeploy-agent
-    state: restarted
-
 - name: Reboot instance
   reboot:
     msg: Maintenance reboot initiated

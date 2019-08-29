@@ -6,7 +6,7 @@
     dest: /root
     mode: '0666'
   tags:
-    - codedeploy
+    - aws_codedeploy
 
 - name: Install AWS CodeDeploy agent
   apt:
@@ -14,7 +14,7 @@
     install_recommends: yes
     deb: "/root/{{ aws_codedeploy_agent_file }}"
   tags:
-    - codedeploy
+    - aws_codedeploy
 
 - name: Start and enable AWS CodeDeploy agent
   service:
@@ -22,7 +22,7 @@
     state: started
     enabled: yes
   tags:
-    - codedeploy
+    - aws_codedeploy
 
 - name: Set up AWS CodeDeploy codedeploy.onpremises.yml
   template:
@@ -31,4 +31,4 @@
   notify: 
     - Restart CodeDeploy Agent
   tags:
-    - codedeploy
+    - aws_codedeploy

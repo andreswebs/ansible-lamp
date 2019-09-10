@@ -47,10 +47,37 @@
   tags:
     - aws_cloudwatch
 
+
+# Check if CloudWatch agent is running
+- name: Check CloudWatch agent
+  shell: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status -m onPremise"
+  register: cloudwatch_agent_ctl_output
+  changed_when: false
+  tags:
+    - aws_cloudwatch
+
+- name: Set CloudWatch agent fact
+  set_fact:
+    cloudwatch_agent_status: "{{ cloudwatch_agent_ctl_output.stdout | from_json | json_query('status') }}"
+  tags:
+    - aws_cloudwatch
+
+- name: Run CloudWatch agent if not running
+  shell: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m onPremise -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s"
+  when: cloudwatch_agent_status != 'running'
+  changed_when: false
+  register: yo  
+  tags:
+    - aws_cloudwatch
+
+- debug:
+    var: yo
+  tags: debug
+
 - name: Start and enable AWS CloudWatch agent
   service:
     name: amazon-cloudwatch-agent
     state: started
     enabled: yes
   tags:
-    - aws_codedeploy
+    - aws_cloudwatch

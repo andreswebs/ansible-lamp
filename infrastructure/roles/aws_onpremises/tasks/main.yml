@@ -1,2 +1,3 @@
 ---
 - import_tasks: aws_onpremises.yml
+- import_tasks: aws_cloudwatch.yml

@@ -1,0 +1,56 @@
+---
+- name: Get AWS CloudWatch agent
+  get_url:
+    url: "https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/{{ aws_onpremises_cloudwatch_agent_file }}"
+    dest: /root
+    mode: '0666'
+  tags:
+    - aws_cloudwatch
+
+- name: Install collectd
+  apt:
+    state: latest
+    update_cache: yes
+    install_recommends: yes
+    name:
+      - collectd
+  tags:
+    - aws_cloudwatch
+    - collectd
+
+- name: Install AWS CloudWatch agent
+  apt:
+    state: present
+    install_recommends: yes
+    deb: "/root/{{ aws_onpremises_cloudwatch_agent_file }}"
+  tags:
+    - aws_cloudwatch
+
+# For AWS Lightsail, enable AmazonCloudWatchAgent profile
+# https://www.iamcal.com/lightsail-cloudwatch
+# https://stackoverflow.com/questions/41645642/can-i-use-aws-lightsail-with-aws-cloudwatch
+- name: Configure AmazonCloudWatchAgent profile credentials
+  blockinfile:
+    path: /opt/aws/amazon-cloudwatch-agent/etc/common-config.toml
+    block: |
+      [credentials]
+      shared_credential_profile = "AmazonCloudWatchAgent"
+  tags:
+    - aws_cloudwatch
+
+- name: Set up AWS CloudWatch agent config.json
+  copy:
+    src: files/aws_cloudwatch_config.json
+    dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
+  notify: 
+    - Restart CloudWatch Agent
+  tags:
+    - aws_cloudwatch
+
+- name: Start and enable AWS CloudWatch agent
+  service:
+    name: amazon-cloudwatch-agent
+    state: started
+    enabled: yes
+  tags:
+    - aws_codedeploy

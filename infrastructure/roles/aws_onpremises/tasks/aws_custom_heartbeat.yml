@@ -1,0 +1,23 @@
+---
+- name: Set heartbeat script
+  copy:
+    src: files/aws-cloudwatch-heartbeat.sh
+    dest: /usr/local/bin/aws-cloudwatch-heartbeat
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - aws_custom_heartbeat
+
+- name: Set heartbeat cron job
+  cron:
+    name: aws-cloudwatch-heartbeat
+    minute: "{{ aws_onpremises_heartbeat_cron.minute }}"
+    hour: "{{ aws_onpremises_heartbeat_cron.hour }}"
+    day: "{{ aws_onpremises_heartbeat_cron.day }}"
+    month: "{{ aws_onpremises_heartbeat_cron.month }}"
+    weekday: "{{ aws_onpremises_heartbeat_cron.weekday }}"
+    user: root
+    job: /usr/local/bin/aws-cloudwatch-heartbeat
+  tags:
+    - aws_custom_heartbeat

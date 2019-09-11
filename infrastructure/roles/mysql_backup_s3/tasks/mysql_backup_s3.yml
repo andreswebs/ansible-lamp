@@ -1,5 +1,5 @@
 ---
-- name: Set up backup script
+- name: Set backup script
   template:
     owner: root
     group: root

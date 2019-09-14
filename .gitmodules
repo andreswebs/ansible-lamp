@@ -7,3 +7,6 @@
 [submodule "infrastructure/roles/aws_onpremises"]
 	path = infrastructure/roles/aws_onpremises
 	url = git://github.com/andreswebs/ansible-role-aws-onpremises.git
+[submodule "infrastructure/roles/aws_codedeploy"]
+	path = infrastructure/roles/aws_codedeploy
+	url = git://github.com/andreswebs/ansible-role-aws-codedeploy.git

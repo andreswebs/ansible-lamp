@@ -27,7 +27,7 @@
     src: apache_app.conf.j2
     dest: "/etc/apache2/sites-available/{{ apache.server_name }}.conf"
     owner: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart Apache
   tags:
     - app
@@ -40,12 +40,13 @@
 
 - name: Enable new virtual host
   command: "a2ensite {{ apache.server_name }}"
-  notify: Restart Apache      
+  notify: Restart Apache
   tags:
     - app
 
 # to restart apache
-- meta: flush_handlers
+- name: Run handlers
+  meta: flush_handlers
   tags:
     - app
     - system

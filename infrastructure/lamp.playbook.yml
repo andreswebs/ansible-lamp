@@ -10,7 +10,6 @@
     - vars/{{ env }}/aws_config.yml
 
   tasks:
-
     # Configure repositories
     - import_tasks: tasks/repositories.yml
 
@@ -23,6 +22,8 @@
         autoclean: yes
       tags:
         - system
+
+    - import_tasks: tasks/swap.yml
 
     # Set up AWS CLI
     - import_role:
@@ -43,7 +44,7 @@
 
     # Set up apache
     - import_tasks: tasks/apache.yml
-    
+
     - import_role:
         name: mysql_backup_s3
       vars:
@@ -54,7 +55,7 @@
     - import_tasks: tasks/php.yml
 
     # Set up AWS CodeDeploy
-    - import_role: 
+    - import_role:
         name: aws_codedeploy
       vars:
         aws_codedeploy_access_key_id: "{{ aws.aws_access_key_id }}"
@@ -81,5 +82,4 @@
         - system
 
   handlers:
-
-    - import_tasks: tasks/handlers.yml 
+    - import_tasks: tasks/handlers.yml

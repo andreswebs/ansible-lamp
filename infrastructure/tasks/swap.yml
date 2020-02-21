@@ -1,0 +1,69 @@
+# Based on:
+# https://stackoverflow.com/questions/24765930/add-swap-memory-with-ansible
+# https://askubuntu.com/questions/103915/how-do-i-configure-swappiness
+# https://unix.stackexchange.com/questions/23072/how-can-i-check-if-swap-is-active-from-the-command-line
+---
+- name: Allocate swap file
+  command: fallocate -l 4g /swapfile
+  args:
+    creates: /swapfile
+  tags:
+    - swap
+
+- name: Set swap file permissions
+  file:
+    path: /swapfile
+    owner: root
+    group: root
+    mode: "0600"
+  tags:
+    - swap
+
+- name: Check swap file type
+  command: file /swapfile
+  register: swapfile
+  changed_when: false
+  tags:
+    - swap
+
+- name: Make swap area if not present
+  command: mkswap /swapfile
+  when: swapfile.stdout.find('swap file') == -1
+  tags:
+    - swap
+
+- name: Write swap entry in fstab
+  mount:
+    state: present
+    src: /swapfile
+    path: none
+    fstype: swap
+    opts: sw
+    passno: "0"
+    dump: "0"
+  tags:
+    - swap
+
+- name: Mount swap if not mounted
+  command: swapon /swapfile
+  when: ansible_swaptotal_mb < 1
+  tags:
+    - swap
+
+- name: Set swappiness in /etc/sysctl.d
+  copy:
+    content: |
+      vm.swappiness = 20
+    dest: /etc/sysctl.d/60-swappiness.conf
+    owner: root
+    group: root
+    mode: "0644"
+  register: swappiness
+  tags:
+    - swap
+
+- name: Load new swappiness settings if swappiness changed
+  command: sysctl -p /etc/sysctl.d/60-swappiness.conf
+  when: swappiness.changed
+  tags:
+    - swap

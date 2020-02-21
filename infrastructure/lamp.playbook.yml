@@ -13,15 +13,7 @@
     # Configure repositories
     - import_tasks: tasks/repositories.yml
 
-    # System update
-    - name: Upgrade system
-      apt:
-        update_cache: yes
-        upgrade: dist
-        autoremove: yes
-        autoclean: yes
-      tags:
-        - system
+    - import_tasks: tasks/system.yml
 
     - import_tasks: tasks/swap.yml
 
@@ -70,6 +62,9 @@
     - name: Install and configure Let's Encrypt certificate in production
       include_tasks: tasks/letsencrypt.yml
       when: env is defined and env == 'prod'
+
+    # Set up Monit
+    - import_tasks: tasks/monit.yml
 
     # System check
     - name: Check if a reboot is required

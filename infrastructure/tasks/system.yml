@@ -1,0 +1,33 @@
+---
+# System update
+- name: Upgrade system
+  apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  tags:
+    - system
+
+- name: Install basic security packages
+  apt:
+    state: present
+    name:
+      - ufw
+      - unattended-upgrades
+      - fail2ban
+  tags:
+    - system
+
+- name: Install tools
+  apt:
+    state: present
+    name:
+      - vim
+      - tmux
+      - htop
+      - curl
+      - git-core
+      - jq
+  tags:
+    - system

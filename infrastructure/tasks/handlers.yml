@@ -3,6 +3,13 @@
   service:
     name: apache2
     state: restarted
+    enabled: yes
+
+- name: Restart Monit
+  service:
+    name: monit
+    state: restarted
+    enabled: yes
 
 - name: Reboot instance
   reboot:

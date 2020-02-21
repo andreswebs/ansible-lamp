@@ -1,0 +1,19 @@
+---
+- name: Install Monit
+  apt:
+    update_cache: yes
+    state: present
+    name: monit
+  tags:
+    - monit
+
+- name: Set Monit config
+  copy:
+    src: files/monit/monit_lamp.conf
+    dest: /etc/monit/conf.d/lamp.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Monit
+  tags:
+    - monit

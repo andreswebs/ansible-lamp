@@ -5,6 +5,7 @@
   become: yes
   become_user: root
   vars_files:
+    - vars/all/system_config.yml
     - vars/all/app_config.yml
     - vars/all/mysql_config.yml
     - vars/{{ env }}/aws_config.yml

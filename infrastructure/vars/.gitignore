@@ -3,6 +3,7 @@ dev/**
 prod/**
 !prod/.gitkeep
 !prod/aws_config.example.yml
+!prod/system_config.example.yml
 all/**
 !all/.gitkeep
 !all/app_config.example.yml

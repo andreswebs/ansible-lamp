@@ -1,0 +1,12 @@
+---
+- name: Install chrony
+  apt:
+    update_cache: yes
+    state: present
+    name: chrony
+  tags: chrony
+# edit /etc/chrony/chrony.conf
+# add:
+# server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4
+
+# systemctl restart chrony

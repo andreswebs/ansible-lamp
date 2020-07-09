@@ -1,0 +1,63 @@
+---
+# Set up PHP 5.6
+- name: Install PHP 5.6
+  apt:
+    state: present
+    install_recommends: yes
+    name:
+      - php5.6
+      - php5.6-cli
+      - php5.6-mysql
+      - php5.6-curl
+      - php5.6-soap
+      - php5.6-xml
+      - php5.6-xmlrpc
+      - php5.6-zip
+      - php5.6-mbstring
+      - php5.6-gettext
+      - php5.6-bcmath
+      - php5.6-bz2
+      - php5.6-intl
+      - php5.6-gd
+      - libapache2-mod-php5.6
+  notify: Restart Apache
+  tags:
+    - php5
+
+- name: Backup original php.ini
+  copy:
+    remote_src: yes
+    src: "/etc/php/5.6/apache2/php.ini"
+    dest: "/etc/php/5.6/apache2/php.ini.bak"
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - php5
+
+- name: Set new php.ini
+  copy:
+    src: "files/php/php.ini"
+    dest: "/etc/php/5.6/apache2/php.ini"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Apache
+  tags:
+    - php5
+
+- name: Disable PHP 7.4 module on Apache
+  apache2_module:
+    name: php7.4
+    state: absent
+  notify: Restart Apache
+  tags:
+    - php5
+
+- name: Enable PHP 5.6 module on Apache
+  apache2_module:
+    name: php5.6
+    state: present
+  notify: Restart Apache
+  tags:
+    - php5

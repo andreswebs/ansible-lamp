@@ -17,6 +17,8 @@
 
     - import_tasks: tasks/swap.yml
 
+    - import_tasks: tasks/chrony.yml
+
     # Set up AWS CLI
     - import_role:
         name: aws_onpremises
@@ -45,6 +47,10 @@
 
     # Set up PHP
     - import_tasks: tasks/php.yml
+
+    - name: PHP 5.6
+      include_tasks: tasks/php5.yml
+      when: php5 is defined and php5 == 'true'
 
     # Set up AWS CodeDeploy
     - import_role:

@@ -7,13 +7,32 @@
   tags:
     - monit
 
-- name: Set Monit config
-  copy:
-    src: files/monit/monit_lamp.conf
-    dest: /etc/monit/conf.d/lamp.conf
+- name: Configure Apache monitoring
+  file:
+    src: /etc/monit/conf-available/apache2
+    dest: /etc/monit/conf-enabled/apache2
     owner: root
     group: root
-    mode: "0644"
+    state: link
   notify: Restart Monit
+  tags:
+    - monit
+
+- name: Configure MySQL monitoring
+  file:
+    src: /etc/monit/conf-available/mysql
+    dest: /etc/monit/conf-enabled/mysql
+    owner: root
+    group: root
+    state: link
+  notify: Restart Monit
+  tags:
+    - monit
+
+- name: Start the Monit service
+  service:
+    name: monit
+    state: started
+    enabled: true
   tags:
     - monit

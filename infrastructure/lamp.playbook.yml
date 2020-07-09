@@ -49,9 +49,11 @@
     # Set up PHP
     - import_tasks: tasks/php.yml
 
-    - name: PHP 5.6
+    - name: Legacy PHP 5.6
       include_tasks: tasks/php5.yml
-      when: php5 is defined and php5 == 'true'
+      when: php5 is defined and php5
+      tags:
+        - php5
 
     # Set up AWS CodeDeploy
     - import_role:
@@ -69,6 +71,8 @@
     - name: Install and configure Let's Encrypt certificate in production
       include_tasks: tasks/letsencrypt.yml
       when: env is defined and env == 'prod'
+      tags:
+        - letsencrypt
 
     # Set up Monit
     - import_tasks: tasks/monit.yml

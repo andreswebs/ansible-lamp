@@ -2,5 +2,3 @@ mysql/**
 !mysql/.gitkeep
 php/**
 !php/.gitkeep
-libs/**
-!libs/.gitkeep

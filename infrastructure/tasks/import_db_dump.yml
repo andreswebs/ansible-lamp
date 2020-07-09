@@ -1,0 +1,23 @@
+---
+- name: Copy database file
+  copy:
+    src: "files/mysql/{{ mysql.database_dump }}"
+    dest: "/tmp/{{ mysql.database_dump }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - import_db_dump
+
+- name: Import database
+  mysql_db:
+    name: "{{ mysql.database_name }}"
+    state: import
+    target: "/tmp/{{ mysql.database_dump }}"
+    login_host: localhost
+    login_user: root
+    login_password: "{{ mysql.root_password }}"
+  notify:
+    - Restart MySQL
+  tags:
+    - import_db_dump

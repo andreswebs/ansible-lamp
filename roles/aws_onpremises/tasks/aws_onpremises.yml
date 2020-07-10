@@ -1,0 +1,45 @@
+---
+- name: Install AWS CLI
+  become: true
+  become_user: root
+  apt:
+    state: present
+    install_recommends: yes    
+    update_cache: yes
+    name: awscli
+  tags:
+    - aws_onpremises
+
+- name: Ensure .aws directory
+  become: true
+  become_user: "{{ aws_onpremises_system_username }}"
+  file: 
+    path: "{{ ansible_env.HOME }}/.aws"
+    state: directory 
+    mode: '0755'
+  tags:
+    - aws_onpremises
+
+- name: Set up AWS credentials
+  become: true
+  become_user: "{{ aws_onpremises_system_username }}"
+  template:
+    owner: "{{ aws_onpremises_system_username }}"
+    group: "{{ aws_onpremises_system_username }}"
+    mode: '0600'
+    src: aws_credentials.j2
+    dest: "{{ ansible_env.HOME }}/.aws/credentials"
+  tags:
+    - aws_onpremises
+
+- name: Set up AWS config
+  become: true
+  become_user: "{{ aws_onpremises_system_username }}"
+  template:
+    owner: "{{ aws_onpremises_system_username }}"
+    group: "{{ aws_onpremises_system_username }}"
+    mode: '0600'
+    src: aws_config.j2
+    dest: "{{ ansible_env.HOME }}/.aws/config"
+  tags:
+    - aws_onpremises

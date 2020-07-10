@@ -1,0 +1,13 @@
+---
+aws_onpremises_access_key_id: null
+aws_onpremises_secret_access_key: null
+aws_onpremises_system_username: root
+aws_onpremises_region: us-east-1
+aws_onpremises_cloudwatch_agent_file: amazon-cloudwatch-agent.deb
+
+aws_onpremises_heartbeat_cron:
+  minute: '*'
+  hour: '*'
+  day: '*'
+  month: '*'
+  weekday: '*'

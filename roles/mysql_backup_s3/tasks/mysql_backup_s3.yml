@@ -1,0 +1,23 @@
+---
+- name: Set backup script
+  template:
+    owner: root
+    group: root
+    mode: '0755'
+    src: mysql-backup-s3.sh.j2
+    dest: /usr/local/bin/mysql-backup-s3
+  tags:
+    - mysql_backup_s3
+
+- name: Set backup cron job
+  cron:
+    name: mysql-backup-s3
+    minute: "{{ mysql_backup_cron.minute }}"
+    hour: "{{ mysql_backup_cron.hour }}"
+    day: "{{ mysql_backup_cron.day }}"
+    month: "{{ mysql_backup_cron.month }}"
+    weekday: "{{ mysql_backup_cron.weekday }}"
+    user: root
+    job: /usr/local/bin/mysql-backup-s3
+  tags:
+    - mysql_backup_s3

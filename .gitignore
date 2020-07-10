@@ -1,0 +1,6 @@
+lamp.playbook.retry
+hosts
+hosts.ini
+inventory/**
+!inventory/.gitkeep
+!inventory/hosts.prod.example.ini

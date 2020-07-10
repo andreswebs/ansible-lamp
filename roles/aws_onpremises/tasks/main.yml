@@ -1,0 +1,4 @@
+---
+- import_tasks: aws_onpremises.yml
+- import_tasks: aws_cloudwatch.yml
+- import_tasks: aws_custom_heartbeat.yml

@@ -1,0 +1,34 @@
+# Install and configure AWS CodeDeploy agent
+---
+- name: Get AWS CodeDeploy agent
+  get_url:
+    url: "https://aws-codedeploy-{{ aws_codedeploy_region }}.s3.amazonaws.com/latest/{{ aws_codedeploy_agent_file }}"
+    dest: /root
+    mode: '0666'
+  tags:
+    - aws_codedeploy
+
+- name: Install AWS CodeDeploy agent
+  apt:
+    state: present
+    install_recommends: yes
+    deb: "/root/{{ aws_codedeploy_agent_file }}"
+  tags:
+    - aws_codedeploy
+
+- name: Start and enable AWS CodeDeploy agent
+  service:
+    name: codedeploy-agent
+    state: started
+    enabled: yes
+  tags:
+    - aws_codedeploy
+
+- name: Set up AWS CodeDeploy codedeploy.onpremises.yml
+  template:
+    src: codedeploy.onpremises.yml.j2
+    dest: /etc/codedeploy-agent/conf/codedeploy.onpremises.yml
+  notify: 
+    - Restart CodeDeploy Agent
+  tags:
+    - aws_codedeploy

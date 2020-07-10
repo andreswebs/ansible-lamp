@@ -1,0 +1,87 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Configure LAMP stack
+  hosts: all
+  become: yes
+  become_user: root
+  vars_files:
+    - vars/all/app_config.yml
+    - vars/all/mysql_config.yml
+    - vars/{{ env }}/system_config.yml
+    - vars/{{ env }}/aws_config.yml
+
+  tasks:
+    # Configure repositories
+    - import_tasks: tasks/repositories.yml
+
+    - import_tasks: tasks/system.yml
+
+    - import_tasks: tasks/swap.yml
+
+    - import_tasks: tasks/chrony.yml
+
+    # Set up AWS CLI
+    - import_role:
+        name: aws_onpremises
+      vars:
+        aws_onpremises_access_key_id: "{{ aws.aws_access_key_id }}"
+        aws_onpremises_secret_access_key: "{{ aws.aws_secret_access_key }}"
+
+    # Set up MySQL
+    - import_role:
+        name: mysql
+      vars:
+        mysql_root_password: "{{ mysql.root_password }}"
+        mysql_database_user: "{{ mysql.database_user }}"
+        mysql_user_password: "{{ mysql.user_password }}"
+        mysql_database_name: "{{ mysql.database_name }}"
+
+    # Set up apache
+    - import_tasks: tasks/apache.yml
+
+    - import_role:
+        name: mysql_backup_s3
+      vars:
+        mysql_backup_username: root
+        mysql_backup_bucket: "{{ aws.backup_bucket }}"
+
+    # Set up PHP
+    - import_tasks: tasks/php.yml
+
+    - name: Legacy PHP 5.6
+      include_tasks: tasks/php5.yml
+      when: php5 is defined and php5
+      tags:
+        - php5
+
+    # Set up AWS CodeDeploy
+    - import_role:
+        name: aws_codedeploy
+      vars:
+        aws_codedeploy_access_key_id: "{{ aws.aws_access_key_id }}"
+        aws_codedeploy_secret_access_key: "{{ aws.aws_secret_access_key }}"
+        aws_codedeploy_iam_user_arn: "{{ aws.iam_user_arn }}"
+        aws_codedeploy_region: "{{ aws.region }}"
+
+    # Install and configure Let's Encrypt certificate in production
+    - name: Install and configure Let's Encrypt certificate in production
+      include_tasks: tasks/letsencrypt.yml
+      when: env is defined and env == 'prod'
+      tags:
+        - letsencrypt
+
+    # Set up Monit
+    - import_tasks: tasks/monit.yml
+
+    # System check
+    - name: Check if a reboot is required
+      shell: "[ -f /var/run/reboot-required ]"
+      failed_when: false
+      register: reboot_required
+      changed_when: reboot_required.rc == 0
+      notify: Reboot instance
+      tags:
+        - system
+
+  handlers:
+    - import_tasks: tasks/handlers.yml

@@ -1,0 +1,10 @@
+---
+mysql_backup_username: root
+mysql_backup_path: /backups/mysql
+mysql_backup_bucket: null
+mysql_backup_cron:
+  minute: 0
+  hour: 0
+  day: '*'
+  month: '*'
+  weekday: '*'

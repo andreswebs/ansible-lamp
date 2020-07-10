@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# This script will create a database dump for each db except the system ones and upload it to AWS S3
+# The backups are removed from the local system after upload to S3
+
+# Requirements:
+# AWS CLI configured with proper credentials to upload the db dumps
+# db user configured to use the mysqldump command without a password prompt
+
+USERNAME="{{ mysql_backup_username }}"
+BACKUP_PATH="{{ mysql_backup_path }}"
+BACKUP_BUCKET="{{ mysql_backup_bucket }}"
+
+# create the backup folder if it doesn't exist
+if [ ! -d "${BACKUP_PATH}" ]; then
+  mkdir -p "${BACKUP_PATH}"
+fi
+
+# get a list of database names
+databases="$(mysql -u "${USERNAME}" -e "SHOW DATABASES;" | tr -d "|" | grep -v Database)"
+
+for db in ${databases}; do
+
+  if [ "${db}" == 'information_schema' ] || [ "${db}" == 'performance_schema' ] || [ "${db}" == 'mysql' ] || [ "${db}" == 'sys' ]; then
+    continue
+  fi
+  
+  mysqldump -u "${USERNAME}" --databases "${db}" > "${BACKUP_PATH}/${db}.sql"
+
+  aws s3 cp "${BACKUP_PATH}/${db}.sql" "s3://${BACKUP_BUCKET}/${db}.sql" 
+
+  rm "${BACKUP_PATH}/${db}.sql"
+
+done
+

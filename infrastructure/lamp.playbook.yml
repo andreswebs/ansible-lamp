@@ -38,6 +38,10 @@
 
     - name: Import DB dump
       include_tasks: tasks/import_db_dump.yml
+      vars:
+        mysql_database_dump: "{{ mysql.database_dump }}"
+        mysql_database_name: "{{ mysql.database_name }}"
+        mysql_root_password: "{{ mysql.root_password }}"
       when: import_db_dump is defined and import_db_dump
       tags:
         - import_db_dump

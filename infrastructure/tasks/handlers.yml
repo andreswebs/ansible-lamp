@@ -11,6 +11,12 @@
     state: restarted
     enabled: yes
 
+- name: Restart MySQL
+  service:
+    name: mysql
+    state: restarted
+    enabled: yes
+
 - name: Reboot instance
   reboot:
     msg: Maintenance reboot initiated

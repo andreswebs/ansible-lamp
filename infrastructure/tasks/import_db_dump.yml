@@ -1,8 +1,8 @@
 ---
 - name: Copy database file
   copy:
-    src: "files/mysql/{{ mysql.database_dump }}"
-    dest: "/tmp/{{ mysql.database_dump }}"
+    src: "files/mysql/{{ mysql_database_dump }}"
+    dest: "/tmp/{{ mysql_database_dump }}"
     owner: root
     group: root
     mode: '0644'
@@ -11,12 +11,12 @@
 
 - name: Import database
   mysql_db:
-    name: "{{ mysql.database_name }}"
+    name: "{{ mysql_database_name }}"
     state: import
-    target: "/tmp/{{ mysql.database_dump }}"
+    target: "/tmp/{{ mysql_database_dump }}"
     login_host: localhost
     login_user: root
-    login_password: "{{ mysql.root_password }}"
+    login_password: "{{ mysql_root_password }}"
   notify:
     - Restart MySQL
   tags:
